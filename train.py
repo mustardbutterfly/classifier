@@ -3,8 +3,7 @@ from dataGenerator import DataGenerator
 import torch
 import tiktoken
 
-from lossCalculator import kl_divergence_loss
-
+from lossCalculator import kl_divergence_loss, kl_loss_between_pair
 
 tiktoker = tiktoken.get_encoding('gpt2')
 
@@ -25,12 +24,28 @@ for i in range(1000):
     print(loss)
 
 
-print("This is 0's")
-print(classifier(torch.tensor([[0]*10])))
-print("This is 1's")
-print(classifier(torch.tensor([[1]*10])))
-print("This is random 1's and 0's")
-print(classifier(torch.tensor([[1,1,0,0,0,1,0,0,1,1]])))
+zeros = classifier(torch.tensor([[0]*10]))
+ones = classifier(torch.tensor([[1]*10]))
+mix = classifier(torch.tensor([[1,1,0,0,0,1,0,0,1,1]]))
+
+print("loss between 0s")
+print(kl_loss_between_pair(zeros, zeros))
+
+print("loss between 1s")
+print(kl_loss_between_pair(ones, ones))
+
+print("loss between 0s and 1s")
+print(kl_loss_between_pair(zeros, ones))
+
+print("loss between 0s and mix")
+print(kl_loss_between_pair(zeros, mix))
+
+print("loss between 1s and mix")
+print(kl_loss_between_pair(ones, mix))
+
+print("loss between mix and mix")
+print(kl_loss_between_pair(mix, mix))
+
 
 
 # How, 2 similar lines...

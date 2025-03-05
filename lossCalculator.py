@@ -19,7 +19,16 @@ def kl_divergence_loss(preds, weak_pairs, lambda_entropy=0.1):
     if len(weak_pairs) > 0:
         loss /= len(weak_pairs)
 
-    # Entropy regularization to prevent mode collapse
+    # Entropy regularization to prevent model collapse
     entropy_loss = -torch.sum(preds_prob * preds_log, dim=1).mean()
 
     return loss + lambda_entropy * entropy_loss
+
+def kl_loss_between_pair(input1, input2):
+    kl_loss = torch.nn.KLDivLoss(reduction='batchmean')
+
+    # Convert logits to probability distributions
+    preds_input1 = F.log_softmax(input1, dim=1)  # Log-probabilities
+    preds_input2 = F.softmax(input2, dim=1)  # Probabilities
+
+    return kl_loss(preds_input1, preds_input2)
